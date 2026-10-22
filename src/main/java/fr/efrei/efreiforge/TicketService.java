@@ -2,6 +2,7 @@ package fr.efrei.efreiforge;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,4 +21,34 @@ public class TicketService {
                     .getResultList();
         }
     }
+
+    public List<Ticket> getTicketsByStatut(Statut statut) {
+        try (EntityManager em = fabrique.createEntityManager()) {
+
+            return em.createQuery(
+                            "select t from Ticket t where t.statut = :statut",
+                            Ticket.class
+                    )
+                    .setParameter("statut", statut)
+                    .getResultList();
+        }
+    }
+
+    public void ajouterTicket(Ticket ticket) {
+        try (EntityManager em = fabrique.createEntityManager()) {
+            EntityTransaction transaction = em.getTransaction();
+            transaction.begin();
+            try {
+                if (em.find(Ticket.class, ticket.getIdentifiant()) != null) {
+                    throw new TicketDejaExistantException(ticket.getIdentifiant());
+                }
+                em.persist(ticket);
+                transaction.commit();
+            } catch (RuntimeException e) {
+                transaction.rollback();
+                throw e;
+            }
+        }
+    }
+
 }
