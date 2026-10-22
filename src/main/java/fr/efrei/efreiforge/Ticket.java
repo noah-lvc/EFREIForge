@@ -3,7 +3,7 @@ package fr.efrei.efreiforge;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "ticket")
+@Table(name = "Ticket")
 public class Ticket {
 
     @Id
