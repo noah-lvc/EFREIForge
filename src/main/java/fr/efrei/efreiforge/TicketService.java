@@ -34,6 +34,18 @@ public class TicketService {
         }
     }
 
+    public List<Ticket> getTicketsByCollaborateur(Collaborateur collaborateur) {
+        try (EntityManager em = fabrique.createEntityManager()) {
+
+            return em.createQuery(
+                            "select t from Ticket t where t.collaborateur.identifiant = :identifiant",
+                            Ticket.class
+                    )
+                    .setParameter("identifiant", collaborateur.getIdentifiant())
+                    .getResultList();
+        }
+    }
+
     public void ajouterTicket(Ticket ticket) {
         try (EntityManager em = fabrique.createEntityManager()) {
             EntityTransaction transaction = em.getTransaction();
