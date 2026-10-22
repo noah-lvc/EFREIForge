@@ -3,23 +3,26 @@ package fr.efrei.efreiforge;
 import jakarta.persistence.*;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Table(name = "ticket")
 public class Ticket {
 
     @Id
-    @Column(length = 10)
-    private double id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-    @Column(length = 100)
     private String titre;
 
-    @Column(length = 50)
-    private String priorite;
+    @Enumerated(EnumType.STRING)
+    private Priorite priorite;
+
+    @Enumerated(EnumType.STRING)
+    private Statut statut;
 
     public Ticket(){}
 
-    public Ticket(String titre, String priorite) {
+    public Ticket(String titre, Priorite priorite) {
         this.titre = titre;
         this.priorite = priorite;
+        this.statut = Statut.A_FAIRE;
     }
 }
