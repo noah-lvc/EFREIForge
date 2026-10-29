@@ -123,7 +123,6 @@ public class Ticket {
 
     @Override
     public String toString() {
-        // On vérifie si un collaborateur est assigné pour afficher son nom, sinon on met "Non assigné"
         String infoCollaborateur = (collaborateur != null)
                 ? collaborateur.getPrenom() + " " + collaborateur.getNom()
                 : "Non assigné";

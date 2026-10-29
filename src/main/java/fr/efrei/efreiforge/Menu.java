@@ -144,10 +144,10 @@ public class Menu {
             System.out.println("0 - Retour");
 
             switch (scanner.nextLine()) {
-                case "1" -> afficherListe(collaborateurService.getAllCollaorateurs());
+                case "1" -> afficherListeCollaborateur(collaborateurService.getAllCollaorateurs());
                 case "2" -> {
                     System.out.println("Nom (ou morceau du nom) :");
-                    afficherListe(collaborateurService.rechercherParNom(scanner.nextLine()));
+                    afficherListeCollaborateur(collaborateurService.rechercherParNom(scanner.nextLine()));
                 }
                 case "3" -> {
                     System.out.println("Identifiant recherché :");
@@ -199,17 +199,82 @@ public class Menu {
 
     private void gestionTickets() {}
 
-    private void voirTickets() {}
+    private void voirTickets() {
+        boolean retour = false;
+
+        while (!retour) {
+
+            System.out.println("\n=== Voir les tickets ===");
+            System.out.println("1 - Afficher tous les tickets");
+            System.out.println("2 - Afficher par statut");
+            System.out.println("0 - Retour");
+
+            switch (scanner.nextLine()) {
+                case "1" -> afficherListeTickets(ticketService.getAllTickets());
+                case "2" -> voirTicketParStatut();
+                case "0" -> retour = true;
+                default -> System.out.println("Choix invalide");
+            }
+        }
+    }
+
+    private void voirTicketParStatut(){
+        Statut statut = null;
+        boolean choixValide = false;
+        while (!choixValide) {
+            System.out.println("Choisissez le statut :");
+            System.out.println("(1) - A_FAIRE");
+            System.out.println("(2) - EN_COURS");
+            System.out.println("(3) - A_VALIDER");
+            System.out.println("(4) - TERMINE");
+            System.out.println("(5) - Retour");
+
+            String choix = scanner.nextLine();
+
+            switch (choix) {
+                case "1" -> {
+                    statut = Statut.A_FAIRE;
+                    choixValide = true;
+                }
+                case "2" -> {
+                    statut = Statut.EN_COURS;
+                    choixValide = true;
+                }
+                case "3" -> {
+                    statut = Statut.A_VALIDER;
+                    choixValide = true;
+                }
+                case "4" -> {
+                    statut = Statut.TERMINE;
+                    choixValide = true;
+                }
+                case "0" -> {
+                    return;
+                }
+                default -> System.out.println("Choix invalide. Veuillez taper 0, 1, 2, 3 ou 4.\n");
+            }
+        }
+        afficherListeTickets(ticketService.getTicketsByStatut(statut));
+    }
 
     //endregion
 
-    private static void afficherListe(List<Collaborateur> collaborateurs) {
+    private static void afficherListeCollaborateur(List<Collaborateur> collaborateurs) {
         if (collaborateurs.isEmpty()) {
             System.out.println("Aucun collaborateur trouvé.");
         }
         for (Collaborateur c : collaborateurs) {
-            System.out.print(c.getClass().getSimpleName() + " " + c.getIdentifiant() + " - ");
+            System.out.print(c.getClass().getSimpleName() + " - ");
             c.afficher();
+        }
+    }
+
+    private static void afficherListeTickets(List<Ticket> tickets) {
+        if (tickets.isEmpty()) {
+            System.out.println("Aucun ticket trouvé.");
+        }
+        for (Ticket t : tickets) {
+            System.out.println(t.toString());
         }
     }
 }
