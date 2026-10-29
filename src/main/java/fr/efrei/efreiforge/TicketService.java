@@ -34,6 +34,12 @@ public class TicketService {
         }
     }
 
+    public Ticket getTicketByIdentifiant(long identifiant) {
+        try (EntityManager em = fabrique.createEntityManager()) {
+            return em.find(Ticket.class, identifiant);
+        }
+    }
+
     public List<Ticket> getTicketsByCollaborateur(Collaborateur collaborateur) {
         try (EntityManager em = fabrique.createEntityManager()) {
 
@@ -52,6 +58,20 @@ public class TicketService {
             transaction.begin();
             try {
                 em.persist(ticket);
+                transaction.commit();
+            } catch (RuntimeException e) {
+                transaction.rollback();
+                throw e;
+            }
+        }
+    }
+
+    public void mettreAJourTicket(Ticket ticket) {
+        try (EntityManager em = fabrique.createEntityManager()) {
+            EntityTransaction transaction = em.getTransaction();
+            transaction.begin();
+            try {
+                em.merge(ticket);
                 transaction.commit();
             } catch (RuntimeException e) {
                 transaction.rollback();

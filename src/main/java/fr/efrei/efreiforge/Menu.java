@@ -175,7 +175,7 @@ public class Menu {
 
         while (!retour) {
 
-            System.out.println("\n=== Gestion Tickets ===");
+            System.out.println("\n=== Section Tickets ===");
             System.out.println("1 - Créer un ticket");
             System.out.println("2 - Gestion des tickets");
             System.out.println("3 - Voir les tickets");
@@ -197,7 +197,64 @@ public class Menu {
         System.out.println("Le ticket " +ticket.getTitre() + " (" + ticket.getIdentifiant() + ") a été ajouté(e).");
     }
 
-    private void gestionTickets() {}
+    private void gestionTickets() {
+        boolean retour = false;
+
+        while (!retour) {
+
+            System.out.println("\n=== Gestion Tickets ===");
+            System.out.println("1 - Assigner un ticket");
+            System.out.println("2 - Avancer status d'un ticket");
+            System.out.println("3 - Reculer status d'un ticker");
+            System.out.println("0 - Retour");
+
+            switch (scanner.nextLine()) {
+                case "1" -> assignerTicket();
+                case "2" -> System.out.println("en cours de développement");
+                case "3" -> System.out.println("en cours de développement");
+                case "0" -> retour = true;
+                default -> System.out.println("Choix invalide");
+            }
+        }
+    }
+
+    private void assignerTicket() {
+        afficherListeTickets(ticketService.getAllTickets());
+        System.out.println("Entrez l'id du ticket à assigner :");
+
+        try {
+            long ticketId = Long.parseLong(scanner.nextLine());
+            Ticket ticket = ticketService.getTicketByIdentifiant(ticketId);
+
+            if (ticket == null) {
+                System.out.println("Erreur : Aucun ticket ne correspond à cet ID.");
+                return;
+            }
+
+            afficherListeCollaborateur(collaborateurService.getAllCollaorateurs());
+            System.out.println("Entrez l'id du collaborateur à assigner :");
+            String collabId = scanner.nextLine();
+
+            Collaborateur collaborateur = collaborateurService.trouverCollaborateur(collabId);
+
+            if (collaborateur == null) {
+                System.out.println("Erreur : Aucun collaborateur ne correspond à cet ID.");
+                return;
+            }
+
+            try {
+                ticket.assignerCollaborateur(collaborateur);
+                ticketService.mettreAJourTicket(ticket);
+                System.out.println("Le ticket a été assigné avec succès à " + collaborateur.getPrenom() + " !");
+            } catch (AssignationImpossibleException e) {
+                System.out.println("Assignation refusée : " + e.getMessage());
+            }
+
+
+        } catch (NumberFormatException e) {
+            System.out.println("Erreur : L'ID du ticket doit être un nombre.");
+        }
+    }
 
     private void voirTickets() {
         boolean retour = false;

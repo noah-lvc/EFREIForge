@@ -67,7 +67,7 @@ public class Ticket {
     }
 
 
-    public void assigner(Collaborateur collaborateur) {
+    public void assignerCollaborateur(Collaborateur collaborateur) {
         if (collaborateur == null) {
             throw new AssignationImpossibleException("Le collaborateur est obligatoire");
         }
