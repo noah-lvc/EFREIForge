@@ -51,9 +51,6 @@ public class TicketService {
             EntityTransaction transaction = em.getTransaction();
             transaction.begin();
             try {
-                if (em.find(Ticket.class, ticket.getIdentifiant()) != null) {
-                    throw new TicketDejaExistantException(ticket.getIdentifiant());
-                }
                 em.persist(ticket);
                 transaction.commit();
             } catch (RuntimeException e) {

@@ -2,6 +2,8 @@ package fr.efrei.efreiforge;
 
 import jakarta.persistence.*;
 
+import java.util.Scanner;
+
 @Entity
 @Table(name = "ticket")
 public class Ticket {
@@ -29,6 +31,39 @@ public class Ticket {
         this.titre = titre;
         this.priorite = priorite;
         this.statut = Statut.A_FAIRE;
+    }
+
+    public Ticket(Scanner scanner) {
+        System.out.println("Entrez le titre du ticket :");
+        String titre = scanner.nextLine();
+        Priorite priorite = null;
+        boolean choixValide = false;
+        while (!choixValide) {
+            System.out.println("Choisissez la priorité :");
+            System.out.println("(1) - BASSE");
+            System.out.println("(2) - MOYENNE");
+            System.out.println("(3) - HAUTE");
+
+            String choix = scanner.nextLine();
+
+            switch (choix) {
+                case "1" -> {
+                    priorite = Priorite.BASSE;
+                    choixValide = true; 
+                }
+                case "2" -> {
+                    priorite = Priorite.NORMALE;
+                    choixValide = true;
+                }
+                case "3" -> {
+                    priorite = Priorite.HAUTE;
+                    choixValide = true;
+                }
+                default -> System.out.println("Choix invalide. Veuillez taper 1, 2 ou 3.\n");
+            }
+        }
+
+        this(titre, priorite);
     }
 
 

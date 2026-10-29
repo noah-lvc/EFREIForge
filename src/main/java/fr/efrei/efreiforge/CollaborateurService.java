@@ -18,7 +18,7 @@ public class CollaborateurService {
         this.fabrique = fabrique;
     }
 
-    public void ajouter(Collaborateur collaborateur) {
+    public void ajouterCollaborateur(Collaborateur collaborateur) {
         try (EntityManager em = fabrique.createEntityManager()) {
             EntityTransaction transaction = em.getTransaction();
             transaction.begin();
@@ -45,7 +45,7 @@ public class CollaborateurService {
     }
 
 
-    public boolean augmenter(String identifiant, double pourcentage) {
+    public boolean augmenterCollaborateur(String identifiant, double pourcentage) {
         try (EntityManager em = fabrique.createEntityManager()) {
             EntityTransaction transaction = em.getTransaction();
             transaction.begin();
@@ -66,13 +66,13 @@ public class CollaborateurService {
         }
     }
 
-    public Collaborateur trouver(String identifiant) {
+    public Collaborateur trouverCollaborateur(String identifiant) {
         try (EntityManager em = fabrique.createEntityManager()) {
             return em.find(Collaborateur.class, identifiant);
         }
     }
 
-    public long nombre() {
+    public long nombreCollaborateur() {
         try (EntityManager em = fabrique.createEntityManager()) {
             return em.createQuery("select count(c) from Collaborateur c", Long.class)
                     .getSingleResult();

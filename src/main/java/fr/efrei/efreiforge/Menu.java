@@ -88,7 +88,7 @@ public class Menu {
         }
 
         try {
-            collaborateurService.ajouter(collaborateur);
+            collaborateurService.ajouterCollaborateur(collaborateur);
             System.out.println(collaborateur.getPrenom() + " (" + collaborateur.getIdentifiant() + ") a été ajouté(e).");
         } catch (CollaborateurDejaExistantException e) {
             System.out.println("Impossible d'ajouter " + collaborateur.getPrenom() + " : l'identifiant "
@@ -119,7 +119,7 @@ public class Menu {
         System.out.println("Pourcentage d'augmentation :");
         try {
             double pourcentage = Double.parseDouble(scanner.nextLine());
-            if (collaborateurService.augmenter(id, pourcentage)) {
+            if (collaborateurService.augmenterCollaborateur(id, pourcentage)) {
                 System.out.println("Augmentation appliquée.");
             } else {
                 System.out.println("Aucun collaborateur avec l'identifiant " + id + ".");
@@ -152,14 +152,14 @@ public class Menu {
                 case "3" -> {
                     System.out.println("Identifiant recherché :");
                     String identifiant = scanner.nextLine();
-                    Collaborateur trouve = collaborateurService.trouver(identifiant);
+                    Collaborateur trouve = collaborateurService.trouverCollaborateur(identifiant);
                     if (trouve == null) {
                         System.out.println("Aucun collaborateur avec l'identifiant " + identifiant + ".");
                     } else {
                         trouve.afficher();
                     }
                 }
-                case "4" -> System.out.println("Nombre de collaborateurs : " + collaborateurService.nombre());
+                case "4" -> System.out.println("Nombre de collaborateurs : " + collaborateurService.nombreCollaborateur());
                 case "0" -> retour = true;
                 default -> System.out.println("Choix invalide");
             }
@@ -191,11 +191,15 @@ public class Menu {
         }
     }
 
-    private void creerTicket(){}
+    private void creerTicket() {
+        Ticket ticket = new Ticket(scanner);
+        ticketService.ajouterTicket(ticket);
+        System.out.println("Le ticket " +ticket.getTitre() + " (" + ticket.getIdentifiant() + ") a été ajouté(e).");
+    }
 
-    private void gestionTickets(){}
+    private void gestionTickets() {}
 
-    private void voirTickets(){}
+    private void voirTickets() {}
 
     //endregion
 
