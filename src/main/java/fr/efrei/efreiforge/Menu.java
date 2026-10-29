@@ -22,7 +22,10 @@ public class Menu {
 
         while (continuer) {
 
-            afficherMenuPrincipal();
+            System.out.println("\n=== EFREIForge ===");
+            System.out.println("1 - Gestion Collaborateurs");
+            System.out.println("2 - Gestion Tickets");
+            System.out.println("0 - Quitter");
 
             switch (scanner.nextLine()) {
                 case "1" -> menuCollaborateurs();
@@ -32,13 +35,6 @@ public class Menu {
 
             }
         }
-    }
-
-    private void afficherMenuPrincipal() {
-        System.out.println("\n=== EFREIForge ===");
-        System.out.println("1 - Gestion Collaborateurs");
-        System.out.println("2 - Gestion Tickets");
-        System.out.println("0 - Quitter");
     }
 
     //region menuCollaborateurs
@@ -64,7 +60,41 @@ public class Menu {
         }
     }
 
-    private void creerCollaborateur() {}
+    private void creerCollaborateur() {
+        Collaborateur collaborateur = null;
+        boolean choixValide = false;
+
+        while (!choixValide) {
+            // Le menu doit être DANS la boucle pour s'afficher à nouveau en cas d'erreur
+            System.out.println("Quel type de collaborateur voulez-vous ajouter ?");
+            System.out.println("1 - Programmeur");
+            System.out.println("2 - Testeur");
+            System.out.println("0 - Retour");
+
+            switch (scanner.nextLine()) {
+                case "1" -> {
+                    collaborateur = new Programmeur(scanner);
+                    choixValide = true;
+                }
+                case "2" -> {
+                    collaborateur = new Testeur(scanner);
+                    choixValide = true;
+                }
+                case "0" -> {
+                    return;
+                }
+                default -> System.out.println("Choix invalide. Veuillez réessayer.\n");
+            }
+        }
+
+        try {
+            collaborateurService.ajouter(collaborateur);
+            System.out.println(collaborateur.getPrenom() + " (" + collaborateur.getIdentifiant() + ") a été ajouté(e).");
+        } catch (CollaborateurDejaExistantException e) {
+            System.out.println("Impossible d'ajouter " + collaborateur.getPrenom() + " : l'identifiant "
+                    + e.identifiant() + " est déjà utilisé.");
+        }
+    }
 
     private void gestionCollaborateurs() {}
 

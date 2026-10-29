@@ -36,7 +36,7 @@ public class Adresse {
         System.out.println("Entrez votre rue :");
         String rue = scanner.nextLine();
 
-        System.out.println("Entrez votre codePostal :");
+        System.out.println("Entrez votre code postal :");
         int codePostal = scanner.nextInt();
         scanner.nextLine();
 
