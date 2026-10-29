@@ -120,4 +120,18 @@ public class Ticket {
     public void setCollaborateur(Collaborateur collaborateur) {
         this.collaborateur = collaborateur;
     }
+
+    @Override
+    public String toString() {
+        // On vérifie si un collaborateur est assigné pour afficher son nom, sinon on met "Non assigné"
+        String infoCollaborateur = (collaborateur != null)
+                ? collaborateur.getPrenom() + " " + collaborateur.getNom()
+                : "Non assigné";
+
+        return "ID : " + identifiant +
+                " | Titre : " + titre +
+                " | Priorité : " + priorite +
+                " | Statut : " + statut +
+                " | Assigné à : " + infoCollaborateur;
+    }
 }
