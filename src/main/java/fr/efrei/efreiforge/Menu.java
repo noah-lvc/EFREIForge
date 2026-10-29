@@ -262,13 +262,15 @@ public class Menu {
         while (!retour) {
 
             System.out.println("\n=== Voir les tickets ===");
-            System.out.println("1 - Afficher tous les tickets");
-            System.out.println("2 - Afficher par statut");
-            System.out.println("0 - Retour");
+            System.out.println("(1) - Afficher tous les tickets");
+            System.out.println("(2) - Afficher par statut");
+            System.out.println("(3) - Afficher par collaborateur");
+            System.out.println("(0) - Retour");
 
             switch (scanner.nextLine()) {
                 case "1" -> afficherListeTickets(ticketService.getAllTickets());
                 case "2" -> voirTicketParStatut();
+                case "3" -> voirTicketParCollaborateur();
                 case "0" -> retour = true;
                 default -> System.out.println("Choix invalide");
             }
@@ -312,6 +314,20 @@ public class Menu {
             }
         }
         afficherListeTickets(ticketService.getTicketsByStatut(statut));
+    }
+
+    private void voirTicketParCollaborateur() {
+        afficherListeCollaborateur(collaborateurService.getAllCollaorateurs());
+        System.out.println("Entrez l'id du collaborateur à assigner :");
+        String collabId = scanner.nextLine();
+
+        Collaborateur collaborateur = collaborateurService.trouverCollaborateur(collabId);
+
+        if (collaborateur == null) {
+            System.out.println("Erreur : Aucun collaborateur ne correspond à cet ID.");
+            return;
+        }
+        afficherListeTickets(ticketService.getTicketsByCollaborateur(collaborateur));
     }
 
     //endregion
