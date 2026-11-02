@@ -209,17 +209,60 @@ public class Menu {
 
             System.out.println("\n=== Gestion Tickets ===");
             System.out.println("1 - Assigner un ticket");
-            System.out.println("2 - Avancer status d'un ticket");
-            System.out.println("3 - Reculer status d'un ticker");
+            System.out.println("2 - Démarrer un ticket");
+            System.out.println("3 - Soumettre un ticket à validation");
+            System.out.println("4 - Valider un ticket");
+            System.out.println("5 - Renvoyer un ticket en cours");
             System.out.println("0 - Retour");
 
             switch (scanner.nextLine()) {
                 case "1" -> assignerTicket();
-                case "2" -> System.out.println("en cours de développement");
-                case "3" -> System.out.println("en cours de développement");
+                case "2" -> changerStatutTicket(2);
+                case "3" -> changerStatutTicket(3);
+                case "4" -> changerStatutTicket(4);
+                case "5" -> changerStatutTicket(5);
                 case "0" -> retour = true;
                 default -> System.out.println("Choix invalide");
             }
+        }
+    }
+
+    private void changerStatutTicket(int action) {
+        System.out.println("Identifiant du ticket :");
+        try {
+            long identifiant = Long.parseLong(scanner.nextLine().trim());
+            if (identifiant <= 0) {
+                System.out.println("L'identifiant doit être un entier positif.");
+                return;
+            }
+            String testeur = null;
+            if (action == 4 || action == 5) {
+                System.out.println("Identifiant du testeur effectuant l'opération :");
+                testeur = scanner.nextLine().trim();
+            }
+            boolean reussite = switch (action) {
+                case 2 -> ticketService.demarrerTicket(identifiant);
+                case 3 -> ticketService.soumettreTicketValidation(identifiant);
+                case 4 -> ticketService.validerTicket(identifiant, testeur);
+                case 5 -> ticketService.renvoyerTicketEnCours(identifiant, testeur);
+                default -> false;
+            };
+            if (reussite) {
+                System.out.println("Statut du ticket enregistré.");
+            } else {
+                String raison = switch (action) {
+                    case 2 -> "Le ticket doit exister, être à faire et assigné à un programmeur ayant moins de 3 tickets en cours.";
+                    case 3 -> "Le ticket doit exister et être en cours.";
+                    case 4 -> "Le ticket doit exister, être à valider et le validateur doit être un testeur enregistré.";
+                    case 5 -> "Le ticket doit exister, être à valider, avec un testeur enregistré et un responsable ayant moins de 3 tickets en cours.";
+                    default -> "Action inconnue.";
+                };
+                System.out.println("Opération refusée. " + raison);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("L'identifiant du ticket doit être un nombre entier.");
+        } catch (jakarta.persistence.PersistenceException e) {
+            System.out.println("Erreur de base de données : changement de statut impossible.");
         }
     }
 

@@ -110,16 +110,75 @@ public class Ticket {
         return statut;
     }
 
-    public void setStatut(Statut statut) {
-        this.statut = statut;
-    }
-
     public Collaborateur getCollaborateur() {
         return collaborateur;
     }
 
+    public boolean soumettreValidation() {
+        if (this.statut != Statut.EN_COURS) {
+            return false;
+        }
+        this.statut = Statut.A_VALIDER;
+        return true;
+    }
+
+    public boolean demarrer(long nombreTicketsEnCours) {
+        if (this.statut != Statut.A_FAIRE) {
+            return false;
+        }
+
+       if (collaborateur == null) {
+           return false;
+       }
+
+        if (nombreTicketsEnCours >= 3) {
+            return false;
+        }
+
+        this.statut = Statut.EN_COURS;
+
+        return true;
+    }
+
+    public boolean valider(Collaborateur validateur) {
+        if (this.statut != Statut.A_VALIDER) {
+            return false;
+        }
+
+        if (!(validateur instanceof Testeur)) {
+            return false;
+        }
+
+        this.statut = Statut.TERMINE;
+        return true;
+    }
+
+
+    public boolean renvoyerEnCours(Collaborateur validateur,
+                                   long nombreTicketsEnCours) {
+        if  (this.statut != Statut.A_VALIDER) {
+            return false;
+        }
+
+        if (!(validateur instanceof Testeur)) {
+            return false;
+        }
+
+        if (this.getCollaborateur() == null) {
+            return false;
+        }
+
+        if (nombreTicketsEnCours >= 3) {
+            return false;
+        }
+
+        this.statut = Statut.EN_COURS;
+
+        return true;
+    }
+
     public void setCollaborateur(Collaborateur collaborateur) {
-        this.collaborateur = collaborateur;
+        assignerCollaborateur(collaborateur);
     }
 
     @Override

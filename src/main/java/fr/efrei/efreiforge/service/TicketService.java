@@ -54,6 +54,136 @@ public class TicketService {
         }
     }
 
+
+    private long compterTickets(EntityManager em, Collaborateur collaborateur, Statut statut) {
+        return em.createQuery(
+                        "select count(t) from Ticket t " +
+                                "where t.collaborateur = :collaborateur " +
+                                "and t.statut = :statut",
+                        Long.class)
+                .setParameter("collaborateur", collaborateur)
+                .setParameter("statut", statut)
+                .getSingleResult();
+    }
+
+    public boolean demarrerTicket(long identifiant) {
+        try (EntityManager em = fabrique.createEntityManager()) {
+            EntityTransaction transaction = em.getTransaction();
+            transaction.begin();
+
+            try {
+                Ticket ticket = em.find(Ticket.class, identifiant);
+
+                if (ticket == null || ticket.getCollaborateur() == null) {
+                    transaction.rollback();
+                    return false;
+                }
+
+                long nombre = compterTickets(em, ticket.getCollaborateur(), Statut.EN_COURS);
+
+                boolean demarre = ticket.demarrer(nombre);
+
+                if (demarre == false) {
+                    transaction.rollback();
+                    return false;
+                }
+
+                transaction.commit();
+                return true;
+
+            } catch (RuntimeException e) {
+                if (transaction.isActive()) {
+                    transaction.rollback();
+                }
+                throw e;
+            }
+        }
+    }
+
+
+
+    public boolean soumettreTicketValidation(long identifiant) {
+        try (EntityManager em = fabrique.createEntityManager()) {
+            EntityTransaction transaction = em.getTransaction();
+            transaction.begin();
+            try {
+                Ticket ticket = em.find(Ticket.class, identifiant);
+                if (ticket == null) {
+                    transaction.rollback();
+                    return false;
+                }
+
+                if (!ticket.soumettreValidation()) {
+                    transaction.rollback();
+                    return false;
+                }
+                transaction.commit();
+                return true;
+            } catch (RuntimeException e) {
+                if (transaction.isActive()) {
+                    transaction.rollback();
+                }
+                throw e;
+            }
+        }
+    }
+
+    public boolean validerTicket(long identifiant, String identifiantTesteur) {
+        try (EntityManager em = fabrique.createEntityManager()) {
+            EntityTransaction transaction = em.getTransaction();
+            transaction.begin();
+            try {
+                Ticket ticket = em.find(Ticket.class, identifiant);
+                if (ticket == null || identifiantTesteur == null || identifiantTesteur.isBlank()) {
+                    transaction.rollback();
+                    return false;
+                }
+                Collaborateur validateur = em.find(Collaborateur.class, identifiantTesteur);
+
+                if (!ticket.valider(validateur)) {
+                    transaction.rollback();
+                    return false;
+                }
+                transaction.commit();
+                return true;
+            } catch (RuntimeException e) {
+                if (transaction.isActive()) {
+                    transaction.rollback();
+                }
+                throw e;
+            }
+        }
+    }
+
+    public boolean renvoyerTicketEnCours(long identifiant, String identifiantTesteur) {
+        try (EntityManager em = fabrique.createEntityManager()) {
+            EntityTransaction transaction = em.getTransaction();
+            transaction.begin();
+            try {
+                Ticket ticket = em.find(Ticket.class, identifiant);
+                if (ticket == null || ticket.getCollaborateur() == null
+                        || identifiantTesteur == null || identifiantTesteur.isBlank()) {
+                    transaction.rollback();
+                    return false;
+                }
+                Collaborateur validateur = em.find(Collaborateur.class, identifiantTesteur);
+                long nombre = compterTickets(em, ticket.getCollaborateur(), Statut.EN_COURS);
+
+                if (!ticket.renvoyerEnCours(validateur, nombre)) {
+                    transaction.rollback();
+                    return false;
+                }
+                transaction.commit();
+                return true;
+            } catch (RuntimeException e) {
+                if (transaction.isActive()) {
+                    transaction.rollback();
+                }
+                throw e;
+            }
+        }
+    }
+
     public void ajouterTicket(Ticket ticket) {
         try (EntityManager em = fabrique.createEntityManager()) {
             EntityTransaction transaction = em.getTransaction();
