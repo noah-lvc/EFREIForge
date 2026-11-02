@@ -66,6 +66,37 @@ public class TicketService {
                 .getSingleResult();
     }
 
+
+    public boolean supprimerTicket(Ticket ticket) {
+        if (ticket == null) {
+            return false;
+        }
+
+        try (EntityManager em = fabrique.createEntityManager()) {
+            EntityTransaction transaction = em.getTransaction();
+            transaction.begin();
+
+            try {
+                Ticket t = em.find(Ticket.class, ticket.getIdentifiant());
+
+                if (t == null || t.getStatut() != Statut.A_FAIRE) {
+                    transaction.rollback();
+                    return false;
+                }
+
+                em.remove(t);
+                transaction.commit();
+                return true;
+
+            } catch (RuntimeException e) {
+                if (transaction.isActive()) {
+                    transaction.rollback();
+                }
+                throw e;
+            }
+        }
+    }
+
     public boolean demarrerTicket(long identifiant) {
         try (EntityManager em = fabrique.createEntityManager()) {
             EntityTransaction transaction = em.getTransaction();

@@ -213,6 +213,7 @@ public class Menu {
             System.out.println("3 - Soumettre un ticket à validation");
             System.out.println("4 - Valider un ticket");
             System.out.println("5 - Renvoyer un ticket en cours");
+            System.out.println("6 - Supprimer un ticket");
             System.out.println("0 - Retour");
 
             switch (scanner.nextLine()) {
@@ -221,6 +222,7 @@ public class Menu {
                 case "3" -> changerStatutTicket(3);
                 case "4" -> changerStatutTicket(4);
                 case "5" -> changerStatutTicket(5);
+                case "6" -> supprimerTickets();
                 case "0" -> retour = true;
                 default -> System.out.println("Choix invalide");
             }
@@ -376,6 +378,27 @@ public class Menu {
             return;
         }
         afficherListeTickets(ticketService.getTicketsByCollaborateur(collaborateur));
+    }
+
+
+    public void supprimerTickets() {
+        System.out.println("Identifiant du ticket à supprimer :");
+        try {
+            long identifiant = Long.parseLong(scanner.nextLine().trim());
+            Ticket ticket = ticketService.getTicketByIdentifiant(identifiant);
+
+            if (ticket == null) {
+                System.out.println("Ticket introuvable.");
+            } else if (ticketService.supprimerTicket(ticket)) {
+                System.out.println("Ticket supprimé.");
+            } else {
+                System.out.println("Suppression refusée : le ticket doit être à faire.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("L'identifiant doit être un nombre entier.");
+        } catch (jakarta.persistence.PersistenceException e) {
+            System.out.println("Erreur de base de données : suppression impossible.");
+        }
     }
 
     //endregion
