@@ -1,5 +1,6 @@
-package fr.efrei.efreiforge;
+package fr.efrei.efreiforge.modele;
 
+import fr.efrei.efreiforge.exception.AssignationImpossibleException;
 import jakarta.persistence.*;
 
 import java.util.Scanner;

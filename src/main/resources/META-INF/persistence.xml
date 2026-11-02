@@ -7,11 +7,11 @@
     <persistence-unit name="collaborateurs-pu" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <class>fr.efrei.efreiforge.Adresse</class>
-        <class>fr.efrei.efreiforge.Collaborateur</class>
-        <class>fr.efrei.efreiforge.Programmeur</class>
-        <class>fr.efrei.efreiforge.Testeur</class>
-        <class>fr.efrei.efreiforge.Ticket</class>
+        <class>fr.efrei.efreiforge.modele.Adresse</class>
+        <class>fr.efrei.efreiforge.modele.Collaborateur</class>
+        <class>fr.efrei.efreiforge.modele.Programmeur</class>
+        <class>fr.efrei.efreiforge.modele.Testeur</class>
+        <class>fr.efrei.efreiforge.modele.Ticket</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>

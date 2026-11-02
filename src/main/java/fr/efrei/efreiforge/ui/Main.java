@@ -1,4 +1,4 @@
-package fr.efrei.efreiforge;
+package fr.efrei.efreiforge.ui;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;

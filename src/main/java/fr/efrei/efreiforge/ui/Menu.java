@@ -1,5 +1,10 @@
-package fr.efrei.efreiforge;
+package fr.efrei.efreiforge.ui;
 
+import fr.efrei.efreiforge.exception.AssignationImpossibleException;
+import fr.efrei.efreiforge.exception.CollaborateurDejaExistantException;
+import fr.efrei.efreiforge.modele.*;
+import fr.efrei.efreiforge.service.CollaborateurService;
+import fr.efrei.efreiforge.service.TicketService;
 import jakarta.persistence.EntityManagerFactory;
 
 import java.util.List;

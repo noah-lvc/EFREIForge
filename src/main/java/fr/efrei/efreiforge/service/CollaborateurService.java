@@ -1,5 +1,7 @@
-package fr.efrei.efreiforge;
+package fr.efrei.efreiforge.service;
 
+import fr.efrei.efreiforge.exception.CollaborateurDejaExistantException;
+import fr.efrei.efreiforge.modele.Collaborateur;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;

@@ -1,4 +1,4 @@
-package fr.efrei.efreiforge;
+package fr.efrei.efreiforge.modele;
 
 public interface Formateur {
 

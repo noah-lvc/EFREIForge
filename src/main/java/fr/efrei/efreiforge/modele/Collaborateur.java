@@ -1,4 +1,4 @@
-package fr.efrei.efreiforge;
+package fr.efrei.efreiforge.modele;
 
 import java.util.Scanner;
 
@@ -48,7 +48,7 @@ public abstract class Collaborateur {
     }
 
     public Collaborateur(String identifiant, String nom, String prenom, String langagePrefere, double salaire, String rue, int codePostal, String ville, String pays) {
-        this(identifiant, nom, prenom, langagePrefere, salaire, new fr.efrei.efreiforge.Adresse(rue, codePostal, ville, pays));
+        this(identifiant, nom, prenom, langagePrefere, salaire, new Adresse(rue, codePostal, ville, pays));
     }
 
     public Collaborateur(Scanner scanner){

@@ -1,10 +1,12 @@
-package fr.efrei.efreiforge;
+package fr.efrei.efreiforge.service;
 
+import fr.efrei.efreiforge.modele.Collaborateur;
+import fr.efrei.efreiforge.modele.Statut;
+import fr.efrei.efreiforge.modele.Ticket;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TicketService {
