@@ -16,7 +16,7 @@
 
         <properties>
             <property name="jakarta.persistence.jdbc.url"
-                      value="jdbc:mariadb://localhost:3306/efreiforge"/>
+                      value="jdbc:mariadb://localhost:3306/efrei_tp4"/>
             <property name="jakarta.persistence.jdbc.user" value="root"/>
             <property name="jakarta.persistence.jdbc.password" value=""/>
 
