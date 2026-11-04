@@ -110,6 +110,10 @@ public class Ticket {
         return statut;
     }
 
+    public void setStatut(Statut statut) {
+        this.statut = statut;
+    }
+
     public Collaborateur getCollaborateur() {
         return collaborateur;
     }

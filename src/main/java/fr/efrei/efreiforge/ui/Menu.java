@@ -8,6 +8,7 @@ import fr.efrei.efreiforge.service.TicketService;
 import jakarta.persistence.EntityManagerFactory;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Menu {
@@ -209,62 +210,64 @@ public class Menu {
 
             System.out.println("\n=== Gestion Tickets ===");
             System.out.println("1 - Assigner un ticket");
-            System.out.println("2 - Démarrer un ticket");
-            System.out.println("3 - Soumettre un ticket à validation");
-            System.out.println("4 - Valider un ticket");
-            System.out.println("5 - Renvoyer un ticket en cours");
-            System.out.println("6 - Supprimer un ticket");
+            System.out.println("2 - Cycle de vie : Avancer");
+            System.out.println("3 - Cycle de vie : Reculer");
+            System.out.println("4 - Supprimer un ticket");
             System.out.println("0 - Retour");
 
             switch (scanner.nextLine()) {
                 case "1" -> assignerTicket();
-                case "2" -> changerStatutTicket(2);
-                case "3" -> changerStatutTicket(3);
-                case "4" -> changerStatutTicket(4);
-                case "5" -> changerStatutTicket(5);
-                case "6" -> supprimerTickets();
+                case "2" -> cycleDeVie("Avancer");
+                case "3" -> cycleDeVie("Reculer");
+                case "4" -> supprimerTickets();
                 case "0" -> retour = true;
                 default -> System.out.println("Choix invalide");
             }
         }
     }
 
-    private void changerStatutTicket(int action) {
+    private void cycleDeVie(String action) {
+        afficherListeTickets(ticketService.getAllTickets());
         System.out.println("Identifiant du ticket :");
+
         try {
-            long identifiant = Long.parseLong(scanner.nextLine().trim());
-            if (identifiant <= 0) {
-                System.out.println("L'identifiant doit être un entier positif.");
+            long ticketId = Long.parseLong(scanner.nextLine());
+            Ticket ticket = ticketService.getTicketByIdentifiant(ticketId);
+
+            if (ticket == null) {
+                System.out.println("Erreur : Aucun ticket ne correspond à cet ID.");
                 return;
             }
-            String testeur = null;
-            if (action == 4 || action == 5) {
-                System.out.println("Identifiant du testeur effectuant l'opération :");
-                testeur = scanner.nextLine().trim();
+
+            afficherListeCollaborateur(collaborateurService.getAllCollaorateurs());
+            System.out.println("Entrez l'id du collaborateur :");
+            String collabId = scanner.nextLine();
+
+            Collaborateur collaborateur = collaborateurService.trouverCollaborateur(collabId);
+
+            if (collaborateur == null) {
+                System.out.println("Erreur : Aucun collaborateur ne correspond à cet ID.");
+                return;
             }
-            boolean reussite = switch (action) {
-                case 2 -> ticketService.demarrerTicket(identifiant);
-                case 3 -> ticketService.soumettreTicketValidation(identifiant);
-                case 4 -> ticketService.validerTicket(identifiant, testeur);
-                case 5 -> ticketService.renvoyerTicketEnCours(identifiant, testeur);
-                default -> false;
-            };
-            if (reussite) {
-                System.out.println("Statut du ticket enregistré.");
-            } else {
-                String raison = switch (action) {
-                    case 2 -> "Le ticket doit exister, être à faire et assigné à un programmeur ayant moins de 3 tickets en cours.";
-                    case 3 -> "Le ticket doit exister et être en cours.";
-                    case 4 -> "Le ticket doit exister, être à valider et le validateur doit être un testeur enregistré.";
-                    case 5 -> "Le ticket doit exister, être à valider, avec un testeur enregistré et un responsable ayant moins de 3 tickets en cours.";
-                    default -> "Action inconnue.";
-                };
-                System.out.println("Opération refusée. " + raison);
+
+            try {
+                if (Objects.equals(action, "Avancer")) {
+                    ticketService.avancerTicket(ticket, collaborateur);
+                }
+                else if (Objects.equals(action, "Reculer")) {
+                    ticketService.reculerTicket(ticket, collaborateur);
+                }
+
+                ticketService.mettreAJourTicket(ticket);
+                System.out.println(collaborateur.getPrenom() + " à fait passé le ticket au statut suivant.");
+            } catch (AssignationImpossibleException e) {
+                System.out.println("Assignation refusée : " + e.getMessage());
+            } catch (IllegalStateException e) {
+                System.out.println("Action refusée : " + e.getMessage());
+
             }
-        } catch (NumberFormatException e) {
-            System.out.println("L'identifiant du ticket doit être un nombre entier.");
-        } catch (jakarta.persistence.PersistenceException e) {
-            System.out.println("Erreur de base de données : changement de statut impossible.");
+        }  catch (NumberFormatException e) {
+            System.out.println("Erreur : L'ID du ticket doit être un nombre.");
         }
     }
 
@@ -295,7 +298,7 @@ public class Menu {
             try {
                 ticket.assignerCollaborateur(collaborateur);
                 ticketService.mettreAJourTicket(ticket);
-                System.out.println("Le ticket a été assigné avec succès à " + collaborateur.getPrenom() + " !");
+                System.out.println(collaborateur.getPrenom() + " à fait passé le ticket au statut précédent.");
             } catch (AssignationImpossibleException e) {
                 System.out.println("Assignation refusée : " + e.getMessage());
             }
