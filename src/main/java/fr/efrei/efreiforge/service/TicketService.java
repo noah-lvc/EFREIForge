@@ -95,15 +95,17 @@ public class TicketService {
         }
     }
 
-    public void avancerTicket(Ticket ticket,Collaborateur collaborateur){
+    public void avancerTicket(Ticket ticket, Collaborateur acteur) {
         switch (ticket.getStatut()) {
             case A_FAIRE -> {
-                if (ticket.getCollaborateur() == null) {
+                Collaborateur programmeur = ticket.getCollaborateur();
+
+                if (programmeur == null) {
                     throw new IllegalStateException("Le ticket doit être assigné avant d'être démarré.");
                 }
-
-                if (compterTickets(collaborateur) > 3) {
-                    throw new IllegalStateException("Le collaborateur possède déjà 3 tickets en cours.");
+                // On vérifie le programmeur assigné (et non l'acteur qui clique)
+                if (compterTickets(programmeur) >= 3) {
+                    throw new IllegalStateException("Le programmeur assigné possède déjà 3 tickets en cours.");
                 }
 
                 ticket.setStatut(Statut.EN_COURS);
@@ -112,11 +114,9 @@ public class TicketService {
                 ticket.setStatut(Statut.A_VALIDER);
             }
             case A_VALIDER -> {
-
-                if (!(collaborateur instanceof Testeur)) {
+                if (!(acteur instanceof Testeur)) {
                     throw new IllegalStateException("Seul un Testeur peut valider un ticket.");
                 }
-
                 ticket.setStatut(Statut.TERMINE);
             }
             case TERMINE -> {
@@ -125,15 +125,21 @@ public class TicketService {
         }
     }
 
-    public void reculerTicket(Ticket ticket,Collaborateur collaborateur){
-        switch(ticket.getStatut()) {
-            case A_FAIRE, EN_COURS, TERMINE -> throw new IllegalStateException("Le statut du ticket ne peut pas reculer.");
+    public void reculerTicket(Ticket ticket, Collaborateur acteur) {
+        switch (ticket.getStatut()) {
+            case A_FAIRE, EN_COURS, TERMINE ->
+                    throw new IllegalStateException("Le statut du ticket ne peut pas reculer.");
+
             case A_VALIDER -> {
-                if (!(collaborateur instanceof Testeur)) {
-                    throw new IllegalStateException("Seul un Testeur peut valider un ticket.");
+                if (!(acteur instanceof Testeur)) {
+                    throw new IllegalStateException("Seul un Testeur peut renvoyer un ticket.");
                 }
-                if (compterTickets(collaborateur) > 3) {
-                    throw new IllegalStateException("Le collaborateur possède déjà 3 tickets en cours.");
+
+                Collaborateur programmeur = ticket.getCollaborateur();
+
+                // On s'assure que le programmeur qui va récupérer le ticket n'en a pas déjà 3 !
+                if (programmeur != null && compterTickets(programmeur) >= 3) {
+                    throw new IllegalStateException("Le programmeur assigné possède déjà 3 tickets en cours.");
                 }
 
                 ticket.setStatut(Statut.EN_COURS);
