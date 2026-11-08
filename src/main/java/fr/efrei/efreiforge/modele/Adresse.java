@@ -4,7 +4,6 @@ import java.util.Scanner;
 
 import jakarta.persistence.*;
 
-
 @Entity
 public class Adresse {
     @Id
@@ -12,16 +11,16 @@ public class Adresse {
     private Long id;
 
     @Column(length = 50)
-    String rue;
+    private String rue;
 
     @Column(length = 5)
-    int codePostal;
+    private int codePostal;
 
     @Column(length = 50)
-    String ville;
+    private String ville;
 
     @Column(length = 40)
-    String pays;
+    private String pays;
 
     protected Adresse() { }
 
@@ -80,13 +79,9 @@ public class Adresse {
     public void setRue(String rue) {
         this.rue = rue;
     }
+
     @Override
     public String toString() {
-        return "Adresse{" +
-                "rue='" + rue + '\'' +
-                ", codePostal=" + codePostal +
-                ", ville='" + ville + '\'' +
-                ", pays='" + pays + '\'' +
-                '}';
+        return rue + ", " + codePostal + " " + ville + " (" + pays + ")";
     }
 }

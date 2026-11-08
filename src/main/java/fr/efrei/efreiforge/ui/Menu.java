@@ -38,8 +38,6 @@ public class Menu {
                 case "1" -> menuCollaborateurs();
                 case "2" -> menuTickets();
                 case "0" -> continuer = false;
-
-
             }
         }
     }
@@ -77,28 +75,35 @@ public class Menu {
             System.out.println("2 - Testeur");
             System.out.println("0 - Retour");
 
-            switch (scanner.nextLine()) {
-                case "1" -> {
-                    collaborateur = new Programmeur(scanner);
-                    choixValide = true;
+            try {
+                switch (scanner.nextLine()) {
+                    case "1" -> {
+                        collaborateur = new Programmeur(scanner);
+                        choixValide = true;
+                    }
+                    case "2" -> {
+                        collaborateur = new Testeur(scanner);
+                        choixValide = true;
+                    }
+                    case "0" -> {
+                        return;
+                    }
+                    default -> System.out.println("Choix invalide. Veuillez réessayer.\n");
                 }
-                case "2" -> {
-                    collaborateur = new Testeur(scanner);
-                    choixValide = true;
-                }
-                case "0" -> {
-                    return;
-                }
-                default -> System.out.println("Choix invalide. Veuillez réessayer.\n");
-            }
-        }
 
-        try {
-            collaborateurService.ajouterCollaborateur(collaborateur);
-            System.out.println(collaborateur.getPrenom() + " (" + collaborateur.getIdentifiant() + ") a été ajouté(e).");
-        } catch (CollaborateurDejaExistantException e) {
-            System.out.println("Impossible d'ajouter " + collaborateur.getPrenom() + " : l'identifiant "
-                    + e.identifiant() + " est déjà utilisé.");
+                if (collaborateur != null) {
+                    collaborateurService.ajouterCollaborateur(collaborateur);
+                    System.out.println(collaborateur.getPrenom() + " (" + collaborateur.getIdentifiant() + ") a été ajouté(e).");
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("Erreur : Vous devez entrer un nombre (pour le salaire ou code postal).");
+            } catch (IllegalArgumentException e) {
+                System.out.println("Création refusée : " + e.getMessage());
+            } catch (CollaborateurDejaExistantException e) {
+                System.out.println("Impossible d'ajouter " + collaborateur.getPrenom() + " : l'identifiant "
+                        + e.identifiant() + " est déjà utilisé.");
+            }
         }
     }
 
@@ -354,7 +359,7 @@ public class Menu {
             System.out.println("2 - EN_COURS");
             System.out.println("3 - A_VALIDER");
             System.out.println("4 - TERMINE");
-            System.out.println("5 - Retour");
+            System.out.println("0 - Retour");
 
             String choix = scanner.nextLine();
 
@@ -386,7 +391,7 @@ public class Menu {
 
     private void voirTicketParCollaborateur() {
         afficherListeCollaborateur(collaborateurService.getAllCollaorateurs());
-        System.out.println("Entrez l'id du collaborateur à assigner :");
+        System.out.println("Entrez l'id du collaborateur :");
         String collabId = scanner.nextLine();
 
         Collaborateur collaborateur = collaborateurService.trouverCollaborateur(collabId);

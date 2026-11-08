@@ -34,6 +34,7 @@ public class CollaborateurService {
                 logger.info("Collaborateur {} enregistré en base", collaborateur.getIdentifiant());
             } catch (RuntimeException e) {
                 transaction.rollback();
+                logger.error("Erreur lors de la transaction en base de données", e);
                 throw e;
             }
         }
@@ -63,6 +64,7 @@ public class CollaborateurService {
                 return true;
             } catch (RuntimeException e) {
                 transaction.rollback();
+                logger.error("Erreur lors de la transaction en base de données", e);
                 throw e;
             }
         }

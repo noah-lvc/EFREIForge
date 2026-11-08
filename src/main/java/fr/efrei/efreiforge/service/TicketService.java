@@ -4,10 +4,14 @@ import fr.efrei.efreiforge.modele.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class TicketService {
+
+    private static final Logger logger = LoggerFactory.getLogger(TicketService.class);
 
     private final EntityManagerFactory fabrique;
 
@@ -79,17 +83,20 @@ public class TicketService {
 
                 if (t == null || t.getStatut() != Statut.A_FAIRE) {
                     transaction.rollback();
+                    logger.warn("Suppression refusée pour le ticket {} (Statut incorrect ou introuvable)", ticket.getIdentifiant());
                     return false;
                 }
 
                 em.remove(t);
                 transaction.commit();
+                logger.info("Ticket {} supprimé de la base", ticket.getIdentifiant());
                 return true;
 
             } catch (RuntimeException e) {
                 if (transaction.isActive()) {
                     transaction.rollback();
                 }
+                logger.error("Erreur lors de la suppression du ticket {}", ticket.getIdentifiant(), e);
                 throw e;
             }
         }
@@ -107,7 +114,6 @@ public class TicketService {
                 if (compterTickets(programmeur) >= 3) {
                     throw new IllegalStateException("Le programmeur assigné possède déjà 3 tickets en cours.");
                 }
-
                 ticket.setStatut(Statut.EN_COURS);
             }
             case EN_COURS -> {
@@ -154,8 +160,10 @@ public class TicketService {
             try {
                 em.persist(ticket);
                 transaction.commit();
+                logger.info("Nouveau ticket enregistré en base (Titre : {})", ticket.getTitre());
             } catch (RuntimeException e) {
                 transaction.rollback();
+                logger.error("Erreur lors de la création du ticket", e);
                 throw e;
             }
         }
@@ -168,8 +176,10 @@ public class TicketService {
             try {
                 em.merge(ticket);
                 transaction.commit();
+                logger.info("Ticket {} mis à jour avec succès", ticket.getIdentifiant());
             } catch (RuntimeException e) {
                 transaction.rollback();
+                logger.error("Erreur lors de la mise à jour du ticket {}", ticket.getIdentifiant(), e);
                 throw e;
             }
         }

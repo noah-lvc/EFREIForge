@@ -65,8 +65,7 @@ public abstract class Collaborateur {
         String languePreferee = scanner.nextLine();
 
         System.out.println("Entrez votre salaire");
-        double salaire = scanner.nextDouble();
-        scanner.nextLine();
+        double salaire = Double.parseDouble(scanner.nextLine());
 
         this(identifiant, nom, prenom, languePreferee, salaire, new Adresse(scanner));
     }
@@ -100,7 +99,7 @@ public abstract class Collaborateur {
         double avant = this.salaire;
         this.salaire = this.salaire * (1 + (augmentation / 100));
         double apres = this.salaire;
-        logger.debug("Salaire : {} -> {}", avant, apres);             // détail pour l'analyse
+        logger.debug("Salaire : {} -> {}", avant, apres);
     }
 
     public abstract void travailler();
