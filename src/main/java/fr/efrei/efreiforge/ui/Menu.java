@@ -199,7 +199,11 @@ public class Menu {
 
     private void creerTicket() {
         try {
-            Ticket ticket = new Ticket(scanner);
+            System.out.println("Entrez le titre du ticket :");
+            String titre = scanner.nextLine();
+            Priorite priorite = demanderPriorite();
+            Ticket ticket = new Ticket(titre, priorite);
+
             ticketService.ajouterTicket(ticket);
             System.out.println("Le ticket " + ticket.getTitre() + " (" + ticket.getIdentifiant() + ") a été ajouté(e).");
 
@@ -212,12 +216,12 @@ public class Menu {
         boolean retour = false;
 
         while (!retour) {
-
             System.out.println("\n=== Gestion Tickets ===");
             System.out.println("1 - Assigner un ticket");
             System.out.println("2 - Cycle de vie : Avancer");
             System.out.println("3 - Cycle de vie : Reculer");
             System.out.println("4 - Supprimer un ticket");
+            System.out.println("5 - Modifier un ticket"); // NOUVELLE LIGNE
             System.out.println("0 - Retour");
 
             switch (scanner.nextLine()) {
@@ -225,6 +229,7 @@ public class Menu {
                 case "2" -> cycleDeVie("Avancer");
                 case "3" -> cycleDeVie("Reculer");
                 case "4" -> supprimerTickets();
+                case "5" -> modifierTicket();
                 case "0" -> retour = true;
                 default -> System.out.println("Choix invalide");
             }
@@ -244,32 +249,37 @@ public class Menu {
                 return;
             }
 
-            afficherListeCollaborateur(collaborateurService.getAllCollaorateurs());
-            System.out.println("Entrez l'id du collaborateur :");
-            String collabId = scanner.nextLine();
+            Collaborateur acteur = null;
 
-            Collaborateur collaborateur = collaborateurService.trouverCollaborateur(collabId);
+            if (ticket.getStatut() == Statut.A_VALIDER) {
+                afficherListeCollaborateur(collaborateurService.getAllCollaorateurs());
+                System.out.println("Entrez l'id du collaborateur (Testeur) :");
+                String collabId = scanner.nextLine();
 
-            if (collaborateur == null) {
-                System.out.println("Erreur : Aucun collaborateur ne correspond à cet ID.");
-                return;
+                acteur = collaborateurService.trouverCollaborateur(collabId);
+
+                if (acteur == null) {
+                    System.out.println("Erreur : Aucun collaborateur ne correspond à cet ID.");
+                    return;
+                }
             }
 
             try {
                 if (Objects.equals(action, "Avancer")) {
-                    ticketService.avancerTicket(ticket, collaborateur);
+                    ticketService.avancerTicket(ticket, acteur);
+                    System.out.println("Le ticket a avancé avec succès.");
                 }
                 else if (Objects.equals(action, "Reculer")) {
-                    ticketService.reculerTicket(ticket, collaborateur);
+                    ticketService.reculerTicket(ticket, acteur);
+                    System.out.println("Le ticket a été renvoyé avec succès.");
                 }
 
                 ticketService.mettreAJourTicket(ticket);
-                System.out.println(collaborateur.getPrenom() + " à fait passé le ticket au statut suivant.");
+
             } catch (AssignationImpossibleException e) {
                 System.out.println("Assignation refusée : " + e.getMessage());
             } catch (IllegalStateException e) {
                 System.out.println("Action refusée : " + e.getMessage());
-
             }
         }  catch (NumberFormatException e) {
             System.out.println("Erreur : L'ID du ticket doit être un nombre.");
@@ -303,7 +313,7 @@ public class Menu {
             try {
                 ticket.assignerCollaborateur(collaborateur);
                 ticketService.mettreAJourTicket(ticket);
-                System.out.println(collaborateur.getPrenom() + " à fait passé le ticket au statut précédent.");
+                System.out.println("Le ticket à été assigné à " + collaborateur.getPrenom() + " !");
             } catch (AssignationImpossibleException e) {
                 System.out.println("Assignation refusée : " + e.getMessage());
             }
@@ -390,6 +400,7 @@ public class Menu {
 
 
     public void supprimerTickets() {
+        afficherListeTickets(ticketService.getAllTickets());
         System.out.println("Identifiant du ticket à supprimer :");
         try {
             long identifiant = Long.parseLong(scanner.nextLine().trim());
@@ -407,6 +418,82 @@ public class Menu {
         } catch (jakarta.persistence.PersistenceException e) {
             System.out.println("Erreur de base de données : suppression impossible.");
         }
+    }
+
+    private void modifierTicket() {
+        afficherListeTickets(ticketService.getAllTickets());
+        System.out.println("Entrez l'id du ticket à modifier :");
+
+        try {
+            long ticketId = Long.parseLong(scanner.nextLine());
+            Ticket ticket = ticketService.getTicketByIdentifiant(ticketId);
+
+            if (ticket == null) {
+                System.out.println("Erreur : Aucun ticket ne correspond à cet ID.");
+                return;
+            }
+
+            // Règle 8 : Un ticket "Terminé" n'est plus modifiable
+            if (ticket.getStatut() == Statut.TERMINE) {
+                System.out.println("Modification refusée : Un ticket Terminé ne peut plus être modifié.");
+                return;
+            }
+
+            System.out.println("Nouveau titre (laissez vide pour ne pas changer) :");
+            String nouveauTitre = scanner.nextLine();
+
+            try {
+                if (!nouveauTitre.trim().isEmpty()) {
+                    ticket.setTitre(nouveauTitre);
+                }
+
+                System.out.println("Voulez-vous modifier la priorité ? (O/N)");
+                if (scanner.nextLine().trim().equalsIgnoreCase("O")) {
+                    Priorite nouvellePriorite = demanderPriorite();
+                    ticket.setPriorite(nouvellePriorite);
+                }
+
+                ticketService.mettreAJourTicket(ticket);
+                System.out.println("Le ticket a été modifié avec succès.");
+
+            } catch (IllegalArgumentException e) {
+                System.out.println("Erreur lors de la modification : " + e.getMessage());
+            }
+
+        } catch (NumberFormatException e) {
+            System.out.println("Erreur : L'ID du ticket doit être un nombre.");
+        }
+    }
+
+    private Priorite demanderPriorite() {
+        Priorite priorite = null;
+        boolean choixValide = false;
+
+        while (!choixValide) {
+            System.out.println("Choisissez la priorité :");
+            System.out.println("1 - BASSE");
+            System.out.println("2 - NORMALE");
+            System.out.println("3 - HAUTE");
+
+            String choix = scanner.nextLine();
+
+            switch (choix) {
+                case "1" -> {
+                    priorite = Priorite.BASSE;
+                    choixValide = true;
+                }
+                case "2" -> {
+                    priorite = Priorite.NORMALE;
+                    choixValide = true;
+                }
+                case "3" -> {
+                    priorite = Priorite.HAUTE;
+                    choixValide = true;
+                }
+                default -> System.out.println("Choix invalide. Veuillez taper 1, 2 ou 3.\n");
+            }
+        }
+        return priorite;
     }
 
     //endregion

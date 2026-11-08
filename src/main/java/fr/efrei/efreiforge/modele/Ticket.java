@@ -37,36 +37,6 @@ public class Ticket {
         this.statut = Statut.A_FAIRE;
     }
 
-    public Ticket(Scanner scanner) {
-        System.out.println("Entrez le titre du ticket :");
-        String titre = scanner.nextLine();
-
-        if (titre == null || titre.trim().isEmpty()) {
-            throw new IllegalArgumentException("Le titre du ticket est obligatoire.");
-        }
-
-        Priorite priorite = null;
-        boolean choixValide = false;
-        while (!choixValide) {
-            System.out.println("Choisissez la priorité :");
-            System.out.println("(1) - BASSE");
-            System.out.println("(2) - MOYENNE");
-            System.out.println("(3) - HAUTE");
-
-            String choix = scanner.nextLine();
-
-            switch (choix) {
-                case "1" -> { priorite = Priorite.BASSE; choixValide = true; }
-                case "2" -> { priorite = Priorite.NORMALE; choixValide = true; }
-                case "3" -> { priorite = Priorite.HAUTE; choixValide = true; }
-                default -> System.out.println("Choix invalide. Veuillez taper 1, 2 ou 3.\n");
-            }
-        }
-
-        this(titre, priorite);
-    }
-
-
     public void assignerCollaborateur(Collaborateur collaborateur) {
         if (collaborateur == null) {
             throw new AssignationImpossibleException("Le collaborateur est obligatoire");
@@ -94,6 +64,9 @@ public class Ticket {
     }
 
     public void setTitre(String titre) {
+        if (titre == null || titre.trim().isEmpty()) {
+            throw new IllegalArgumentException("Le titre du ticket est obligatoire.");
+        }
         this.titre = titre;
     }
 
@@ -115,73 +88,6 @@ public class Ticket {
 
     public Collaborateur getCollaborateur() {
         return collaborateur;
-    }
-
-    public boolean soumettreValidation() {
-        if (this.statut != Statut.EN_COURS) {
-            return false;
-        }
-        this.statut = Statut.A_VALIDER;
-        return true;
-    }
-
-    public boolean demarrer(long nombreTicketsEnCours) {
-        if (this.statut != Statut.A_FAIRE) {
-            return false;
-        }
-
-       if (collaborateur == null) {
-           return false;
-       }
-
-        if (nombreTicketsEnCours >= 3) {
-            return false;
-        }
-
-        this.statut = Statut.EN_COURS;
-
-        return true;
-    }
-
-    public boolean valider(Collaborateur validateur) {
-        if (this.statut != Statut.A_VALIDER) {
-            return false;
-        }
-
-        if (!(validateur instanceof Testeur)) {
-            return false;
-        }
-
-        this.statut = Statut.TERMINE;
-        return true;
-    }
-
-
-    public boolean renvoyerEnCours(Collaborateur validateur,
-                                   long nombreTicketsEnCours) {
-        if  (this.statut != Statut.A_VALIDER) {
-            return false;
-        }
-
-        if (!(validateur instanceof Testeur)) {
-            return false;
-        }
-
-        if (this.getCollaborateur() == null) {
-            return false;
-        }
-
-        if (nombreTicketsEnCours >= 3) {
-            return false;
-        }
-
-        this.statut = Statut.EN_COURS;
-
-        return true;
-    }
-
-    public void setCollaborateur(Collaborateur collaborateur) {
-        assignerCollaborateur(collaborateur);
     }
 
     @Override

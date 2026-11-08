@@ -103,7 +103,7 @@ public class TicketService {
                 if (programmeur == null) {
                     throw new IllegalStateException("Le ticket doit être assigné avant d'être démarré.");
                 }
-                // On vérifie le programmeur assigné (et non l'acteur qui clique)
+
                 if (compterTickets(programmeur) >= 3) {
                     throw new IllegalStateException("Le programmeur assigné possède déjà 3 tickets en cours.");
                 }
@@ -137,7 +137,7 @@ public class TicketService {
 
                 Collaborateur programmeur = ticket.getCollaborateur();
 
-                // On s'assure que le programmeur qui va récupérer le ticket n'en a pas déjà 3 !
+                // On s'assure que le programmeur qui va récupérer le ticket n'en a pas déjà 3
                 if (programmeur != null && compterTickets(programmeur) >= 3) {
                     throw new IllegalStateException("Le programmeur assigné possède déjà 3 tickets en cours.");
                 }
