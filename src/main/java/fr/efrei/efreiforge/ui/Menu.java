@@ -198,9 +198,14 @@ public class Menu {
     }
 
     private void creerTicket() {
-        Ticket ticket = new Ticket(scanner);
-        ticketService.ajouterTicket(ticket);
-        System.out.println("Le ticket " +ticket.getTitre() + " (" + ticket.getIdentifiant() + ") a été ajouté(e).");
+        try {
+            Ticket ticket = new Ticket(scanner);
+            ticketService.ajouterTicket(ticket);
+            System.out.println("Le ticket " + ticket.getTitre() + " (" + ticket.getIdentifiant() + ") a été ajouté(e).");
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Création annulée : " + e.getMessage());
+        }
     }
 
     private void gestionTickets() {
@@ -315,10 +320,10 @@ public class Menu {
         while (!retour) {
 
             System.out.println("\n=== Voir les tickets ===");
-            System.out.println("(1) - Afficher tous les tickets");
-            System.out.println("(2) - Afficher par statut");
-            System.out.println("(3) - Afficher par collaborateur");
-            System.out.println("(0) - Retour");
+            System.out.println("1 - Afficher tous les tickets");
+            System.out.println("2 - Afficher par statut");
+            System.out.println("3 - Afficher par collaborateur");
+            System.out.println("0 - Retour");
 
             switch (scanner.nextLine()) {
                 case "1" -> afficherListeTickets(ticketService.getAllTickets());
@@ -335,11 +340,11 @@ public class Menu {
         boolean choixValide = false;
         while (!choixValide) {
             System.out.println("Choisissez le statut :");
-            System.out.println("(1) - A_FAIRE");
-            System.out.println("(2) - EN_COURS");
-            System.out.println("(3) - A_VALIDER");
-            System.out.println("(4) - TERMINE");
-            System.out.println("(5) - Retour");
+            System.out.println("1 - A_FAIRE");
+            System.out.println("2 - EN_COURS");
+            System.out.println("3 - A_VALIDER");
+            System.out.println("4 - TERMINE");
+            System.out.println("5 - Retour");
 
             String choix = scanner.nextLine();
 

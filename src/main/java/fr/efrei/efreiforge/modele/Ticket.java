@@ -29,6 +29,9 @@ public class Ticket {
     public Ticket(){}
 
     public Ticket(String titre, Priorite priorite) {
+        if (titre == null || titre.trim().isEmpty()) {
+            throw new IllegalArgumentException("Le titre du ticket est obligatoire.");
+        }
         this.titre = titre;
         this.priorite = priorite;
         this.statut = Statut.A_FAIRE;
@@ -37,6 +40,11 @@ public class Ticket {
     public Ticket(Scanner scanner) {
         System.out.println("Entrez le titre du ticket :");
         String titre = scanner.nextLine();
+
+        if (titre == null || titre.trim().isEmpty()) {
+            throw new IllegalArgumentException("Le titre du ticket est obligatoire.");
+        }
+
         Priorite priorite = null;
         boolean choixValide = false;
         while (!choixValide) {
@@ -48,18 +56,9 @@ public class Ticket {
             String choix = scanner.nextLine();
 
             switch (choix) {
-                case "1" -> {
-                    priorite = Priorite.BASSE;
-                    choixValide = true; 
-                }
-                case "2" -> {
-                    priorite = Priorite.NORMALE;
-                    choixValide = true;
-                }
-                case "3" -> {
-                    priorite = Priorite.HAUTE;
-                    choixValide = true;
-                }
+                case "1" -> { priorite = Priorite.BASSE; choixValide = true; }
+                case "2" -> { priorite = Priorite.NORMALE; choixValide = true; }
+                case "3" -> { priorite = Priorite.HAUTE; choixValide = true; }
                 default -> System.out.println("Choix invalide. Veuillez taper 1, 2 ou 3.\n");
             }
         }
